@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>JOBS</title>
+    <link rel="stylesheet" type="text/css" href="template.css">
+</head>
+<body>
+	{% for location in locations %}
+		<h1 id='location'>{{location}}</h1>
+		{%for category in categories%}
+			<h2 id='category'>{{category}}</h2>
+			{% for post in posts if post.get_category() == category and post.get_location() == location%}
+				<div class='post'>
+					<!-- {{post}} -->
+					<h3 class='post_title'>{{post.get_title()}}</h3>
+					<p class='post_date'>{{post.get_date()}}</p>
+					<p class='post_body'>{{post.get_body()}}</p>
+					<p class='post_reply_email'>{{post.get_email()}}</p>
+				</div>		
+			{% else %}
+				<p class='no_posts'>No posts found.</p>
+			{% endfor %}
+		{% endfor %}
+	{% endfor %}
+</body>
+
+<script type="text/javascript">
+	// converts categories to a readable format
+	conversion_table= ['sof':'software','web':'web developer']
+	def function (category) {
+		return conversion_table[category]
+	}
+</script>
+

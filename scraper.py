@@ -3,103 +3,71 @@ from urllib.request import urlopen
 from urllib.error import URLError
 import re
 from datetime import datetime, timedelta
+from Post import Post
 
-categories = [] 
-locations = [] 
-output = '' 
-
-def set_up_globals():
+def get_globals():
 
 	try:
 		config = {}
 		exec(open('config.conf').read(), config)
-		global locations
 		locations = config['locations']
-		global categories
 		categories = config['categories']
-		global output
-		output = '{}.html'.format(datetime.now().strftime('%Y%m%d%H%M'))
+		# output = '{}.html'.format(datetime.now().strftime('%Y%m%d%H%M'))
+		return (locations, categories)
 
 	except Exception as e:
-		exit()
+		raise
 
-def write_html(tag, text) :
-	#simple function that makes html given tag and text as input
-	with open(output, 'a', encoding='utf8') as f :
-
-		#I am sorry about this but it will be fixed, later 
-		if tag == 'a' :
-			f.write('<a href="{}" target="_blank">Open the original post.</a>'.format(text))
-		else:
-			f.write('<{tag}>{text}</{tag}>'.format(tag = tag ,text = text))
-
-def filter_by_date(ad_date) :
-	# I just care about the new post for today.
+def filter_by_date(ad_date):
+	# I just care about the new posts of today.
 	return datetime.now().date() == datetime.strptime(ad_date, '%Y-%m-%d %H:%M').date()
 
-def get_posts(location, category) :
+def get_posts(location, category):
+
+	posts = []
 
 	url = ('https://' + location + '.craigslist.org/search/' + category)
-
 	try:
 		soup = BeautifulSoup(urlopen(url).read())
 	except URLError :
-		write_html('h4', 'INVALID {} or {}'.format(location.upper(), category.upper()))
-		return
-	# html = urlopen(url).read()
-	
+		raise
 
 	#gets list of post ids
-	posts = soup.find_all('p', {'class':'row'})
+	ids = soup.find_all('p', class_= 'row')
 
-	full_category_name = soup.find('a', {'class':'reset'}).string
-	write_html('h2', full_category_name)
+	#remove nearby posts and old ones
+	ids = (post for post in ids if filter_by_date(post.time['datetime']))
+	ids = (post for post in ids if post.a['href'][0]=='/')
 
-	# if post is a new post then retrtive content
-	for post in ( s for s in posts if filter_by_date(s.find('time')['datetime'])) :
-		get_post('https://' + location + '.craigslist.org/' + category + '/' + post['data-pid'] + '.html')
-	else:
-		write_html('p', 'No more posts found.')
+	for post in ids:
+		posts.append(Post(post['data-pid'], location, category, date = post.time['datetime']))
+
+	return posts 
+
+def make_html(locations, categories, posts):
+	from jinja2 import Environment, PackageLoader
+	env = Environment(loader=PackageLoader('scraper', 'templates'))
+	template = env.get_template('template.html')
+	html_output = template.render(locations= locations, categories= categories, posts= posts)
+	output_destination = '{}.html'.format(datetime.now().strftime('%Y%m%d%H%M'))
+
+	with open(output_destination,'wb') as output:
+		output.write(bytes(html_output, 'UTF-8'))
+
 	
-def get_post(url):
-	try :
-		soup = BeautifulSoup(urlopen(url).read())
-		write_html('h3', soup.title.string)
+def main():
 
-		#get the content of the post
-		post_content = str(soup.find('section', {'id':'postingbody'}).text)
-
-		#remove repetions of <br> and [/br] at the end of the post
-		post_content = re.sub(r'(<br>){2,}','', post_content, flags=re.IGNORECASE)
-		post_content = re.sub(r'(</br>){2,}','', post_content, flags=re.IGNORECASE)
-
-		#write html
-		write_html('p', post_content)
-
-		#get the reply email for the post, the info that I need are in another html page
-		reply = soup.find('a', {'id':'replylink'})
-		if reply is not None :
-			reply_link = reply['href']
-			reply_url = url[:url.find('.org/') + 4] + reply_link 
-			reply_page = BeautifulSoup(urlopen(reply_url).read())
-			reply_email = reply_page.find('div', {'class':'anonemail'}).string 
-			write_html('p', 'Reply at: {}'.format(reply_email))
-		
-		write_html('a', url)
-		write_html('hr','')
-		
-	except URLError as error:
-		return
-	
-def main() :
-
-	set_up_globals()
+	locations, categories = get_globals()
+	posts = []
 
 	for location in locations :
-		write_html('h1',location)
 		for category in categories :
-			get_posts(location, category) 
+			posts.extend(get_posts(location, category)) 
 
+	#make ouput
+	make_html(locations,categories,posts)
 
 if __name__ == '__main__':
 	main()
+	# p = Post('51', 'asheville', 'sad')
+	# print(p)

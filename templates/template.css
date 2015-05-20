@@ -1,0 +1,25 @@
+/*I am trying to make it look like one of those phisical dashboard where you go and put you ads
+yellow background, kinda brown lines and border, black font color 
+
+IDEAS:
+	maybe a pin on the top left corner with different color :
+	red - appplied but no luck
+	green - applied and got a response
+	yellow - cant check status rihgt now
+	black - ads not active anymore
+	05/18/2015 not now and probably shouldnt be here*/
+
+.post {
+	border: solid;
+	background-color: yellow;
+}
+
+.no_posts {
+	color: red;
+	text-align: center;
+}
+
+.post_title {
+	background-color: brown;
+	color: green;
+}

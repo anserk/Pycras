@@ -1,0 +1,41 @@
+craiglist scraper
+
+1- n. scrape per hour
+
+2- scraping section
+	
+		-what craiglist (location)
+		-what category
+		-key word in the header (optional)
+
+3- outup section
+		
+		-mail
+		-txt
+		-open in browser
+		-console
+
+4- last scrape
+
+
+web
+	web,html,info desing
+tch
+	technical support
+sad
+	networking, system admin
+sof
+	software,qa,dba
+eng
+	internet engineering
+
+
+post 
+title
+content
+author
+email 
+phone
+date
+category
+lcoation 
