@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>JOBS</title>
+    <link rel="stylesheet" type="text/css" href="template/template.css">
+    <script type="javascript" src="template/template.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:300,700,400' rel='stylesheet' type='text/css'>      
+</head>
+<body>
+	{% for location in locations %}
+		<h1 id='location'>{{location}}</h1>
+		{%for category in categories%}
+			<h2 id='category'>{{category}}</h2>
+			{% for post in posts if post.get_category() == category and post.get_location() == location%}
+				<ul>
+					<li>
+						<div class='post'>
+							<!-- {{post}} -->
+							<div class="post_header">
+								<h3 class='post_title'>{{post.get_title()}}</h3>
+								<p class='post_date'>Posted on: {{post.get_date()}}</p>
+							</div>
+							<div class="post_body">
+								<p class='post_content'>{{post.get_body()}}</p>
+								<p class='post_reply_email'>Email: {{post.get_email()}}.</p>
+							</div>
+						</div>
+					</li>
+				</ul>
+		
+			{% else %}
+				<p class='no_posts'>No posts found.</p>
+			{% endfor %}
+		{% endfor %}
+	{% endfor %}
+</body>
+
+
+
