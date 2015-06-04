@@ -46,7 +46,7 @@ def get_posts(location, category):
 
 def make_html(locations, categories, posts):
 	from jinja2 import Environment, PackageLoader
-	env = Environment(loader=PackageLoader('scraper', 'templates'))
+	env = Environment(loader=PackageLoader('scraper', 'template'))
 	template = env.get_template('template.html')
 	html_output = template.render(locations= locations, categories= categories, posts= posts)
 	output_destination = '{}.html'.format(datetime.now().strftime('%Y%m%d%H%M'))
@@ -66,6 +66,7 @@ def main():
 
 	#make ouput
 	make_html(locations,categories,posts)
+	print('Posts found:{n_posts}. Done!'.format(n_posts=len(posts)))
 
 if __name__ == '__main__':
 	main()

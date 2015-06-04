@@ -24,7 +24,7 @@ class Post(object) :
 
 		# print(self.url)
 		try:
-			soup = BeautifulSoup(urlopen(self.url).read())
+			soup = BeautifulSoup(urlopen(self.url).read()).text
 			self.title = soup.title.string
 
 			#get the content of the post
@@ -53,6 +53,9 @@ class Post(object) :
 
 	def get_category(self):
 		return self.category
+
+	def get_catefory_full_name(self):
+		return self.category_full_name
 
 	def get_title(self):
 		return self.title
