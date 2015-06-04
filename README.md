@@ -10,6 +10,12 @@ Example of configuration file:
 	categories = ["eng", "sof", "sad", "tch", "web"]
 ```
 
+Now start the main python script simple using:
+
+```python
+	python scraper.py
+```
+
 The output is a very simple html file with the posts found. The name of the file is the timestamp of the time when you ran the program.
 
 You need BeautifulSoup and python3.
